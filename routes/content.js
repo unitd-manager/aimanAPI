@@ -1197,6 +1197,32 @@ app.post("/getCategoryTitle", (req, res, next) => {
     }
   );
 });
+
+app.post("/getSubCategoryTitle", (req, res, next) => {
+  db.query(
+    `SELECT 
+    category_id
+    ,sub_category_title
+    ,sub_category_id
+     FROM sub_category 
+     where category_id = ${db.escape(req.body.category_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
 app.get("/getSubCategory", (req, res, next) => {
   db.query(
     `SELECT sub_category_id, sub_category_title
