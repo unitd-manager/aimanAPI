@@ -36,6 +36,27 @@ WHERE c.content_type= "All Image"`,
   );
 });
 
+app.get("/getEmail", (req, res, next) => {
+  db.query(
+    `select c.title, c.description 
+from content c 
+WHERE c.content_type= "Email"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
 
 app.get("/getPhotoGallery", (req, res, next) => {
   db.query(
