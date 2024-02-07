@@ -36,6 +36,53 @@ WHERE c.content_type= "All Image"`,
   );
 });
 
+app.get("/getAboutUs", (req, res, next) => {
+  db.query(
+    `select c.title, c.description ,m.file_name,m.display_title
+    from content c 
+    LEFT Join media m ON m.record_id=c.content_id
+    WHERE c.content_type= "Web AboutUs"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.get("/getAimanTeam", (req, res, next) => {
+  db.query(
+    `select c.title, c.description ,m.file_name,m.display_title
+    from content c 
+    LEFT Join media m ON m.record_id=c.content_id
+    WHERE c.content_type= "Aiman Team"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+
 app.get("/getEmail", (req, res, next) => {
   db.query(
     `select c.title, c.description 
@@ -57,6 +104,8 @@ WHERE c.content_type= "Email"`,
     }
   );
 });
+
+
 
 app.get("/getPhotoGallery", (req, res, next) => {
   db.query(
