@@ -20,6 +20,38 @@ app.use(
 ),
 
 
+app.get("/getSubCategories", (req, res, next) => {
+  db.query(
+    `SELECT sc.sub_category_title
+    ,sc.sub_category_id
+    ,sc.category_id
+    
+    ,sc.sort_order
+    ,sc.published
+    ,sc.creation_date
+    ,sc.modification_date
+    
+    ,c.category_title
+    
+    FROM sub_category sc
+    LEFT JOIN category c  ON (c.category_id = sc.category_id)
+    WHERE c.category_id!=''
+  ORDER By c.sort_order ASC`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+
 app.post('/getSubCategoryByCategoryId', (req, res, next) => {
   db.query(
     `select sc.sub_category_id 

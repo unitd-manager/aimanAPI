@@ -118,7 +118,8 @@ app.get('/getValueListDropdown', (req, res, next) => {
       { id: '64', name: 'Section Type'},
       { id: '65', name: 'Sub Category Type'},
       { id: '66', name: 'Product Color'},
-      { id: '67', name: 'Product Size'}
+      { id: '67', name: 'Product Size'},
+      { id: '68', name: 'Past Office Bearers'}
     ],
     msg: 'Success',
   })

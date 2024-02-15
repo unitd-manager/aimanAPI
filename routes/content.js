@@ -329,6 +329,29 @@ app.get('/getAboutUs', (req, res, next) => {
   );
 });
 
+app.get("/getPastOfficeBearers", (req, res, next) => {
+  db.query(
+    `select c.title, c.description
+    from content c 
+    WHERE c.content_type= "Past Office Bearers"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+
 app.get('/getShipping', (req, res, next) => {
   db.query(
     `SELECT c.content_id,c.section_id,c.category_id
@@ -1201,11 +1224,82 @@ app.post("/getCategoryTitle", (req, res, next) => {
 app.post("/getSubCategoryTitle", (req, res, next) => {
   db.query(
     `SELECT 
-    category_id
-    ,sub_category_title
-    ,sub_category_id
-     FROM sub_category 
-     where category_id = ${db.escape(req.body.category_id)}`,
+    sc.category_id
+    ,sc.sub_category_title
+    ,sc.sub_category_id
+     FROM sub_category sc
+     Left Join category c on c.category_id = sc.category_id
+     where c.category_id = ${db.escape(req.body.category_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.post("/getSubContent", (req, res, next) => {
+  var formated1 = db.escape(req.body.title).replace('-',' ')
+  db.query(
+    `SELECT 
+     c.category_id
+     ,c.content_id
+     ,c.title
+     ,c.description
+    ,su.sub_category_title
+    ,su.sub_category_id
+     FROM content c
+     LEFT JOIN category ca ON c.category_id = ca.category_id
+     LEFT JOIN section s ON ca.section_id=s.section_id
+     LEFT JOIN sub_category su ON ca.category_id=su.category_id
+     where su.sub_category_title= ${db.escape(req.body.title)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.post("/getSubCategoryContent", (req, res, next) => {
+  db.query(
+    `SELECT 
+    c.content_id
+   ,c.section_id
+   ,c.category_id
+   ,c.sub_category_id
+   ,c.description 
+   ,s.section_title 
+   ,s.section_type
+   ,ca.category_title
+   ,ca.category_type
+   ,sc.sub_category_title
+   ,sc.sub_category_type
+   FROM content c
+   LEFT JOIN (section s)      ON (c.section_id       = s.section_id)
+   LEFT JOIN (category ca)    ON (c.category_id      = ca.category_id)
+   LEFT JOIN (sub_category sc)ON (c.sub_category_id  = sc.sub_category_id)
+   WHERE c.content_type= "Subcategory Content"
+   AND (c.category_id) != '' 
+    AND lower(sc.sub_category_title)= ${db.escape(req.body.title)}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
