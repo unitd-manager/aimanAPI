@@ -36,7 +36,225 @@ WHERE c.content_type= "All Image"`,
   );
 });
 
+app.get("/getAboutUs", (req, res, next) => {
+  db.query(
+    `select c.title, c.description ,m.file_name,m.display_title
+    from content c 
+    LEFT Join media m ON m.record_id=c.content_id
+    WHERE c.content_type= "Web AboutUs"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
 
+app.post('/getDetailContent', (req, res, next) => {
+  let query = `SELECT c.title, c.description, ca.category_title, s.section_title, sc.sub_category_title
+    FROM content c 
+    LEFT JOIN category ca ON c.category_id = ca.category_id
+    LEFT JOIN section s ON c.section_id = s.section_id
+    LEFT JOIN sub_category sc ON c.sub_category_id = sc.sub_category_id
+    WHERE c.section_id = ${db.escape(req.body.section_id)}
+      AND c.category_id = ${db.escape(req.body.category_id)}`;
+
+  if (req.body.sub_category_id) {
+    query += ` AND c.sub_category_id = ${db.escape(req.body.sub_category_id)}`;
+  }
+
+  query += ' GROUP BY c.content_id';
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.log("error: ", err);
+      res.status(500).send({
+        msg: 'Internal Server Error'
+      });
+      return;
+    }
+
+    if (result.length === 0) {
+      res.status(400).send({
+        msg: 'No result found'
+      });
+    } else {
+      res.status(200).send({
+        data: result,
+        msg: 'Success'
+      });
+    }
+  });
+});
+
+
+app.get("/getBanners", (req, res, next) => {
+  db.query(
+    `select c.title, c.description ,m.file_name,m.display_title
+    from content c 
+    LEFT Join media m ON m.record_id=c.content_id
+    WHERE c.content_type= "Banner Image" 
+    ORDER BY c.content_id DESC`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.get("/getContentTypeCount", (req, res, next) => {
+  db.query(
+    `SELECT 
+    SUM(CASE WHEN content_type = 'Events' THEN 1 ELSE 0 END) AS events_count,
+    SUM(CASE WHEN content_type = 'News' THEN 1 ELSE 0 END) AS news_count,
+    SUM(CASE WHEN content_type = 'Article' THEN 1 ELSE 0 END) AS article_count,
+    SUM(CASE WHEN content_type = 'Resources' THEN 1 ELSE 0 END) AS resource_count
+FROM
+    content`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return;
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+   }
+ );
+});
+
+app.get("/getAimanTeam", (req, res, next) => {
+  db.query(
+    `select c.title, c.description ,m.file_name,m.display_title
+    from content c 
+    LEFT Join media m ON m.record_id=c.content_id
+    WHERE c.content_type= "Aiman Team"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.get("/getAimanHomeServices", (req, res, next) => {
+  db.query(
+    `select c.title, c.description ,m.file_name,m.display_title
+    from content c 
+    LEFT Join media m ON m.record_id=c.content_id
+    WHERE c.content_type= "Home Services"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.get("/getAimanHomeResources", (req, res, next) => {
+  db.query(
+    `select c.content_id, c.title, c.description ,m.file_name,m.display_title
+    from content c 
+    LEFT Join media m ON m.record_id=c.content_id
+    WHERE c.latest = 1`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.get("/getEmail", (req, res, next) => {
+  db.query(
+    `select c.title, c.description 
+from content c 
+WHERE c.content_type= "Email"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+app.get("/getPastOfficeBearers", (req, res, next) => {
+  db.query(
+    `select c.title, c.description
+    from content c 
+    WHERE c.content_type= "Past Office Bearers"`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+   }
+);
+});
 app.get("/getPhotoGallery", (req, res, next) => {
   db.query(
     `select c.title, c.description ,m.file_name,m.display_title,m.media_id,c.content_id
@@ -133,7 +351,7 @@ WHERE c.content_type= "General Image"`,
   );
 });
 
-app.get("/getReligionService", (req, res, next) => {
+app.post("/getReligionService", (req, res, next) => {
         var formated = db.escape(req.body.title).replace('-',' ')
 
   db.query(
@@ -164,11 +382,34 @@ AND c.section_id  = 66
 app.get("/getAudioGallery", (req, res, next) => {
        
   db.query(
-    `select c.title, c.description ,m.file_name,m.sort_order
+    `select c.title, c.description ,m.file_name,m.sort_order,m.display_title
 from content c 
 LEFT Join media m ON m.record_id=c.content_id
-WHERE c.content_type= "Audio Gallery"
+WHERE c.content_type= "Audio Gallery" AND m.file_name!=''
 ORDER BY m.sort_order ASC`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.get("/getAudioGalleryDes", (req, res, next) => {
+       
+  db.query(
+    `select c.title, c.description 
+from content c 
+WHERE c.content_type= "Audio Gallery"`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -244,6 +485,130 @@ app.get("/getArticles", (req, res, next) => {
     c.modification_date,
     c.modified_by
     from content c LEFT Join media m ON m.record_id=c.content_id WHERE c.content_type= "Article" and m.room_name="ContentAttachment" AND c.published=1`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+app.post("/getSubCategoryTitle", (req, res, next) => {
+  db.query(
+    `SELECT 
+    category_id
+    ,sub_category_title
+    ,sub_category_id
+     FROM sub_category 
+     where category_id = ${db.escape(req.body.category_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+
+app.post("/getSubContent", (req, res, next) => {
+  db.query(
+    `SELECT 
+     c.category_id
+     ,c.content_id
+     ,c.title
+     ,c.description
+    ,su.sub_category_title
+    ,su.sub_category_id
+     FROM content c
+     LEFT JOIN category ca ON c.category_id = ca.category_id
+     LEFT JOIN section s ON ca.section_id=s.section_id
+     LEFT JOIN sub_category su ON ca.category_id=su.category_id
+     where s.section_id= ${db.escape(req.body.section_id)}`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+
+
+app.post("/getArticlepage", (req, res, next) => {
+  db.query(
+    `select c.title, 
+    c.description ,
+    m.file_name,
+    c.content_date,
+    c.creation_date,
+    c.created_by,
+    c.modification_date,
+    c.modified_by,
+    c.content_type
+    from content c LEFT Join media m ON m.record_id=c.content_id WHERE 
+    c.content_id=${db.escape(req.body.content_id)} AND c.content_type IN ('Article') AND 
+    m.room_name="ContentAttachment" AND c.published=1`,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
+
+
+app.post("/getNewsandEvents", (req, res, next) => {
+  var formated = db.escape(req.body.title1).replace('-', ' ');
+  // Use formated directly without replacing
+  db.query(
+    `SELECT c.title, 
+    c.description,
+    m.file_name,
+    c.content_date,
+    c.creation_date,
+    c.created_by,
+    c.modification_date,
+    c.modified_by,
+    c.content_type
+    FROM content c
+    LEFT JOIN media m ON m.record_id=c.content_id
+    WHERE c.title=${formated} AND c.content_type IN ('News', 'Events', 'Article') AND c.published=1`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -615,7 +980,7 @@ app.get("/getBaithulmaal", (req, res, next) => {
      ,m.room_name
   FROM content c
  LEFT Join media m ON m.record_id=c.content_id 
-  WHERE c.content_id !='' AND c.content_type="Baithulmal Image" AND m.room_name="ContentPic"`,
+  WHERE c.content_id !='' AND c.content_type="Aimaan Baithulmaal" AND m.room_name="ContentPic"`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -1199,11 +1564,13 @@ app.get('/getCategory', (req, res, next) => {
 app.post("/getCategoryTitle", (req, res, next) => {
   db.query(
     `SELECT 
-    section_id
-    ,section_title
-    ,category_id
-     FROM category 
-     where section_id = ${db.escape(req.body.section_id)}`,
+    s.section_id
+    ,s.section_title
+    ,c.category_id
+    ,c.category_title
+     FROM category c
+     LEFT JOIN section s ON c.section_id=s.section_id
+     where s.section_id = ${db.escape(req.body.section_id)}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -1221,15 +1588,18 @@ app.post("/getCategoryTitle", (req, res, next) => {
   );
 });
 
+
 app.post("/getSubCategoryTitle", (req, res, next) => {
   db.query(
     `SELECT 
-    sc.category_id
-    ,sc.sub_category_title
-    ,sc.sub_category_id
+    sc.sub_sc.category_id
+    ,sc.sc.sub_category_title
+    ,sc.c.category_id
+    ,c.category_title
      FROM sub_category sc
+ LEFT JOIN category c ON sc.category_id=c.category_idsc
      Left Join category c on c.category_id = sc.category_id
-     where c.category_id = ${db.escape(req.body.category_id)}`,
+     where c.c.category_id = ${db.escape(req.body.category_id)}`,
     (err, result) => {
       if (err) {
         console.log("error: ", err);
@@ -1317,6 +1687,40 @@ app.post("/getSubCategoryContent", (req, res, next) => {
   );
 });
 
+app.post("/getSubCategoryContent", (req, res, next) => {
+  db.query(
+    `SELECT 
+c.content_id
+,c.title
+,c.description
+    ,sc.sub_category_id
+    ,sc.sub_category_title
+    ,ca.category_id
+    ,ca.category_title
+    ,m.file_name
+     FROM content c
+     LEFT JOIN section s ON c.section_id=s.section_id
+ LEFT JOIN category ca ON s.section_id=ca.section_id
+ LEFT JOIN sub_category sc ON ca.category_id=sc.category_id
+ LEFT JOIN media m ON m.record_id=c.content_id
+     where sc.sub_category_id= ${db.escape(req.body.sub_category_id)}
+     GROUP BY c.content_id `,
+    (err, result) => {
+      if (err) {
+        console.log("error: ", err);
+        return res.status(400).send({
+          data: err,
+          msg: "failed",
+        });
+      } else {
+        return res.status(200).send({
+          data: result,
+          msg: "Success",
+        });
+      }
+    }
+  );
+});
 app.get("/getSubCategory", (req, res, next) => {
   db.query(
     `SELECT sub_category_id, sub_category_title
